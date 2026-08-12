@@ -37,6 +37,8 @@ npm install
 PORT=5000
 MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret_key
+NODE_ENV=# development or production
+EMAIL_TOKEN=your_email_token
 ```
 
 **3. Run the application:**
