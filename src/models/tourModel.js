@@ -54,6 +54,25 @@ const tourSchema = new mongoose.Schema(
     images: { type: [String], required: true },
     startDates: { type: [Date], required: true },
     premium: { type: Boolean },
+    //embedding
+    startLocation: {
+      description: String,
+      type: { type: String, default: "Point", enum: ["Point"] },
+      coordinates: [Number],
+      address: String,
+    },
+    //embedding
+    locations: [
+      {
+        descriptin: String,
+        type: { type: String, default: "Point", enum: ["Point"] },
+        coordinates: [Number],
+        day: Number,
+      },
+    ],
+    durations: { type: Number, required: true },
+    // refferance (parent)
+    guides: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
   },
   {
     timestamps: true, // created_at ve updated_at alanlarını otomatik ekler

@@ -2,28 +2,28 @@
 // bu özellikleri en baştan yazmamak için sınıf oluşturma:
 
 class APIFeatures {
-  constructor(toursQuery, queryParams, parsedQuery) {
-    this.toursQuery = toursQuery; // veritabanı sorgu ismi
+  constructor(query, queryParams, parsedQuery) {
+    this.query = query; // veritabanı sorgu ismi
     this.queryParams = queryParams; // client'dan gelen arama parametreleri
     this.parsedQuery = parsedQuery; // işlenmiş arama parametreleri ($ ekli)
   }
 
   filter() {
-    this.toursQuery = this.toursQuery.find(this.parsedQuery);
+    this.query = this.query.find(this.parsedQuery);
 
     return this;
   }
 
   sort() {
     if (this.queryParams.sort) {
-      this.toursQuery.sort(this.queryParams.sort.replaceAll(",", " "));
+      this.query.sort(this.queryParams.sort.replaceAll(",", " "));
     }
     return this;
   }
 
   select() {
     if (this.queryParams.fields) {
-      this.toursQuery.select(this.queryParams.fields.replaceAll(",", " "));
+      this.query.select(this.queryParams.fields.replaceAll(",", " "));
     }
     return this;
   }
@@ -32,7 +32,7 @@ class APIFeatures {
     const page = Number(this.queryParams.page) || 1;
     const limit = Number(this.queryParams.limit) || 5;
 
-    this.toursQuery.limit(limit).skip((page - 1) * limit);
+    this.query.limit(limit).skip((page - 1) * limit);
     return this;
   }
 }

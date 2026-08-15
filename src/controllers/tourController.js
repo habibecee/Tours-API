@@ -13,7 +13,7 @@ export const getAllTours = catchAsync(async (req, res) => {
     .select();
 
   // sorguyu çalıştır
-  const tours = await features.toursQuery;
+  const tours = await features.query;
 
   // client'a yanıt
   res.status(200).json({
@@ -30,7 +30,9 @@ export const getOneTour = catchAsync(async (req, res) => {
   const id = req.params.id;
 
   // veritabanından id'si bilinen turu al
-  const tour = await Tour.findById(id);
+  // * populate() : ref olarak tanımlanan id'lerin yerine ilgili belgeleri getirir.
+  // * İlk parametre de nerede kullanılacağı, ikinci parametrede getirilmesi istenen veriler belirtilir.
+  const tour = await Tour.findById(id).populate("guides", "name photo email");
 
   if (!tour) {
     throw new NotFound("Tur bulunamadı");

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import tourRoutes from "./routes/tourRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 import cookieParser from "cookie-parser";
 import { NotFound } from "./utils/error.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -47,6 +48,7 @@ mongoose
 app.use("/api/tours", tourRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 // tanımlanmayan route'lar için
 app.use((req, res, next) => next(new NotFound()));
