@@ -49,9 +49,38 @@ export const createReview = catchAsync(async (req, res, next) => {
 });
 
 export const updateReview = catchAsync(async (req, res, next) => {
-  res.json("Yorum güncellendi");
+  const id = req.params.id; // hangi yorum
+  const rating = req.body.rating; // puan 1-5
+  const review = req.body.review; // yorum metni
+  const user = req.user._id; // yorumu atan kullanıcı
+
+  const updatedReview = await Review.findOneAndUpdate(
+    { _id: id, user },
+    {
+      rating,
+      review,
+    },
+    {
+      new: true,
+    },
+  );
+
+  if (!updatedReview) {
+    throw new NotFound("Yorum bulunamadı");
+  }
+
+  res.json({ message: "Yorum güncellendi", data: updatedReview });
 });
 
 export const deleteReview = catchAsync(async (req, res, next) => {
-  res.json("Yorum silindi");
+  const review = await Review.findOneAndDelete({
+    _id: req.params.id,
+    user: req.user.id,
+  });
+
+  if (!review) {
+    throw new NotFound("Yorum bulunamadı");
+  }
+
+  res.json({ message: "Yorum silindi", data: review });
 });
