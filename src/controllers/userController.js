@@ -1,6 +1,8 @@
 import catchAsync from "../utils/catchAsync.js";
 import User from "../models/userModel.js";
 import { BadRequest } from "../utils/error.js";
+import * as factory from "../utils/handlerFactory.js";
+
 export const profile = catchAsync(async (req, res) => {
   //client'a yanıt gönder
   res.status(200).json({ message: "Profil bilgileri alındı", data: req.user });
@@ -32,3 +34,10 @@ export const deleteMe = catchAsync(async (req, res) => {
   //client'a yanıt gönder
   res.status(200).json({ message: "Hesap silindi." });
 });
+
+// Admin endpointleri
+export const getAllUsers = factory.getAll(User);
+export const getOneUser = factory.getOne(User);
+export const createUser = factory.createOne(User);
+export const updateUser = factory.updateOne(User);
+export const deleteUser = factory.deleteOne(User);

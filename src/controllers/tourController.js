@@ -3,99 +3,112 @@ import qs from "qs";
 import APIFeatures from "../utils/apiFeatures.js";
 import { NotFound, BadRequest } from "../utils/error.js";
 import catchAsync from "../utils/catchAsync.js";
+import * as factory from "../utils/handlerFactory.js";
 
-export const getAllTours = catchAsync(async (req, res) => {
-  // sorguyu oluştur
-  const features = new APIFeatures(Tour.find(), req.query, req.parsedQuery)
-    .filter()
-    .sort()
-    .pagination()
-    .select();
+// export const getAllTours = catchAsync(async (req, res) => {
+//   // sorguyu oluştur
+//   const features = new APIFeatures(Tour.find(), req.query, req.parsedQuery)
+//     .filter()
+//     .sort()
+//     .pagination()
+//     .select();
 
-  // sorguyu çalıştır
-  const tours = await features.query;
+//   // sorguyu çalıştır
+//   const tours = await features.query;
 
-  // client'a yanıt
-  res.status(200).json({
-    status: "success",
-    message: "Tüm turlar getirildi",
-    results: tours.length,
-    parsedQuery: req.parsedQuery,
-    data: tours,
-  });
-});
+//   // client'a yanıt
+//   res.status(200).json({
+//     status: "success",
+//     message: "Tüm turlar getirildi",
+//     results: tours.length,
+//     parsedQuery: req.parsedQuery,
+//     data: tours,
+//   });
+// });
 
-export const getOneTour = catchAsync(async (req, res) => {
-  // parametre olarak gelen ID'ye eriş
-  const id = req.params.id;
+export const getAllTours = factory.getAll(Tour);
 
-  // veritabanından id'si bilinen turu al
-  // * populate() : ref olarak tanımlanan id'lerin yerine ilgili belgeleri getirir.
-  // * İlk parametre de nerede kullanılacağı, ikinci parametrede getirilmesi istenen veriler belirtilir.
-  const tour = await Tour.findById(id).populate("guides", "name photo email");
+// export const getOneTour = catchAsync(async (req, res) => {
+//   // parametre olarak gelen ID'ye eriş
+//   const id = req.params.id;
 
-  if (!tour) {
-    throw new NotFound("Tur bulunamadı");
-  }
+//   // veritabanından id'si bilinen turu al
+//   // * populate() : ref olarak tanımlanan id'lerin yerine ilgili belgeleri getirir.
+//   // * İlk parametre de nerede kullanılacağı, ikinci parametrede getirilmesi istenen veriler belirtilir.
+//   const tour = await Tour.findById(id).populate("guides", "name photo email");
 
-  // client'a yanıt
-  res.status(200).json({
-    status: "success",
-    message: `${id} ID'li tur getirildi`,
-    data: tour,
-  });
-});
+//   if (!tour) {
+//     throw new NotFound("Tur bulunamadı");
+//   }
 
-export const createTour = catchAsync(async (req, res) => {
-  // isteğin body kısmındaki veriye eriş
-  const body = req.body;
+//   // client'a yanıt
+//   res.status(200).json({
+//     status: "success",
+//     message: `${id} ID'li tur getirildi`,
+//     data: tour,
+//   });
+// });
 
-  // yeni turu veritabanına kaydet
-  const newTour = await Tour.insertOne(body);
+export const getOneTour = factory.getOne(Tour, [
+  { path: "guides", select: "name photo email" },
+]);
 
-  // client'a yanıt
-  res.status(201).json({
-    status: "success",
-    message: "Tur oluşturuldu",
-    data: newTour,
-  });
-});
+// export const createTour = catchAsync(async (req, res) => {
+//   // isteğin body kısmındaki veriye eriş
+//   const body = req.body;
 
-export const updateTour = catchAsync(async (req, res) => {
-  // veritabanında tur belgesini güncelle
-  // const updateTour = await Tour.findOneAndUpdate({ _id: req.params.id }, req.body); // bir belgeyi herhangi bir değerine göre bulur getirir ve günceller. başka değere göre bulacaksa _id yeri değiştirilir. Güncellemeden önceki veya sonraki halini getiren bir parametresi yoktur.
-  const updateTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // güncellemeden sonraki halini döner
-    runValidators: true, // validation kurallarını uygula
-  }); // belgeyi id değerine göre bulur getirir ve günceller
+//   // yeni turu veritabanına kaydet
+//   const newTour = await Tour.insertOne(body);
 
-  if (!updateTour) {
-    throw new NotFound("Tur bulunamadı");
-  }
+//   // client'a yanıt
+//   res.status(201).json({
+//     status: "success",
+//     message: "Tur oluşturuldu",
+//     data: newTour,
+//   });
+// });
 
-  // client'a yanıt
-  res.status(200).json({
-    status: "success",
-    message: `ID'si ${req.params.id} olan tur güncellendi`,
-    data: updateTour,
-  });
-});
+export const createTour = factory.createOne(Tour);
 
-export const deleteTour = catchAsync(async (req, res) => {
-  // veritabanından id'si bilinen belgeyi kaldır
-  const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+// export const updateTour = catchAsync(async (req, res) => {
+//   // veritabanında tur belgesini güncelle
+//   // const updateTour = await Tour.findOneAndUpdate({ _id: req.params.id }, req.body); // bir belgeyi herhangi bir değerine göre bulur getirir ve günceller. başka değere göre bulacaksa _id yeri değiştirilir. Güncellemeden önceki veya sonraki halini getiren bir parametresi yoktur.
+//   const updateTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true, // güncellemeden sonraki halini döner
+//     runValidators: true, // validation kurallarını uygula
+//   }); // belgeyi id değerine göre bulur getirir ve günceller
 
-  if (!deletedTour) {
-    throw new NotFound("Tur bulunamadı");
-  }
+//   if (!updateTour) {
+//     throw new NotFound("Tur bulunamadı");
+//   }
 
-  // client'a yanıt
-  res.status(200).json({
-    status: "success",
-    message: `ID'si ${req.params.id} olan tur silindi`,
-    data: deletedTour,
-  });
-});
+//   // client'a yanıt
+//   res.status(200).json({
+//     status: "success",
+//     message: `ID'si ${req.params.id} olan tur güncellendi`,
+//     data: updateTour,
+//   });
+// });
+
+export const updateTour = factory.updateOne(Tour);
+
+// export const deleteTour = catchAsync(async (req, res) => {
+//   // veritabanından id'si bilinen belgeyi kaldır
+//   const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+
+//   if (!deletedTour) {
+//     throw new NotFound("Tur bulunamadı");
+//   }
+
+//   // client'a yanıt
+//   res.status(200).json({
+//     status: "success",
+//     message: `ID'si ${req.params.id} olan tur silindi`,
+//     data: deletedTour,
+//   });
+// });
+
+export const deleteTour = factory.deleteOne(Tour);
 
 // en iyi turları almayı sağlayacak parametreleri ayarlayan middleware
 export const aliasTopTours = (req, res, next) => {
