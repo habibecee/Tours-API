@@ -33,7 +33,7 @@ export const updateOne = (Model) =>
       throw new NotFound();
     }
 
-    res.status({
+    res.json({
       status: "İçerik güncellendi",
       data: found,
     });

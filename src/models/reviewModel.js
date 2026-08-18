@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Tour from "./tourModel.js";
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -32,6 +33,51 @@ const reviewSchema = new mongoose.Schema(
 // * Yapılan sorgulardan önce kullanıcının belirtilen bilgilerini getirecek middleware
 reviewSchema.pre(/^find/, function () {
   this.populate("user", "name photo");
+});
+
+// bir tur için turun rating ortalamasını hesaplayan fonksiyon
+reviewSchema.statics.calcRating = async function (tourId) {
+  const result = await this.aggregate([
+    // 1) tura ait olan yorumları al
+    {
+      $match: {
+        tour: tourId,
+      },
+    },
+    // 2) toplam yorum sayısı ve rating ortalamasını hesapla
+    {
+      $group: {
+        _id: "$tour",
+        ratingCount: {
+          $sum: 1,
+        },
+        avgRating: {
+          $avg: "$rating",
+        },
+      },
+    },
+  ]);
+
+  if (result.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: result[0].avgRating.toFixed(2),
+      ratingsQuantity: result[0].ratingCount,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 0,
+      ratingsQuantity: 0,
+    });
+  }
+};
+
+// her yeni yorum atıldığında / silindiğinde / güncellendiğinde rating hesaplama fonksiyonunu çağır ve  tur belgesini güncelle
+reviewSchema.post("save", function () {
+  Review.calcRating(this.tour);
+});
+
+reviewSchema.post(/^findOneAnd/, function (doc) {
+  Review.calcRating(doc.tour._id);
 });
 
 const Review = mongoose.model("Review", reviewSchema);
