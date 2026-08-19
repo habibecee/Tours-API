@@ -8,6 +8,8 @@ import {
   aliasTopTours,
   getTourStats,
   getMonthlyPlan,
+  getToursWithin,
+  getDistances,
 } from "../controllers/tourController.js";
 import formatQuery from "../middlewares/formatQuery.js";
 import { protect, authorizeRoles } from "../middlewares/protect.js";
@@ -33,5 +35,14 @@ router
   .get(getOneTour)
   .patch(protect, authorizeRoles("admin", "lead-guide", "guide"), updateTour)
   .delete(protect, authorizeRoles("admin", "lead-guide"), deleteTour);
+
+// distance: merkez noktadan çemberin yarıçapı
+// latlng: merkez noktanın enlem ve boylam koordinatları
+// unit: mesafe birimi (km veya mil)
+router
+  .route("/tours-within/:distance/center/:latlng/unit/:unit")
+  .get(getToursWithin);
+
+router.route("/distances/:latlng/unit/:unit").get(getDistances);
 
 export default router;

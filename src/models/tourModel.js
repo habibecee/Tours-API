@@ -122,6 +122,10 @@ tourSchema.post("save", function (doc) {
   console.log(`${doc._id} id li tur sisteme kaydedildi. Mail gönderiliyor...`);
 });
 
+//! Index
+// Coğrafi sorguların gerçekleşmesi için eklenmeasi zorunlu olan bir indextir.
+tourSchema.index({ startLocation: "2dsphere" });
+
 // yukarıdaki şemayı kullanarak mongoose modeli oluşturma: ilk parametre modelin ismi, ikinci parametre schemanın kendisidir.
 const Tour = mongoose.model("Tour", tourSchema);
 
