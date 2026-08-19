@@ -13,7 +13,12 @@ export const updateMe = catchAsync(async (req, res) => {
   if (req.body.password)
     throw new BadRequest("Şifreyi bu yöntemle güncelleyemezsiniz");
 
-  // 2) kullanıcı bilgilerini güncelle
+  // 2) fotoğraf verisi varsa kullanıcı belgesine ekle
+  if (req?.file) {
+    req.body.photo = req.file;
+  }
+
+  // 3) kullanıcı bilgilerini güncelle
   const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
     new: true,
   });
